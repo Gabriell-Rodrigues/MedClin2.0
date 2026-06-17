@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<table class="table">
+  <tr><th>ID</th><td>{{ item.pk }}</td></tr>
+  <tr><th>Nome</th><td>{{ item.nome }}</td></tr>
+  <tr><th>Descrição</th><td>{{ item.descricao|default:"-" }}</td></tr>
+  <tr><th>Número do lote</th><td>{{ item.numeroLote|default:"-" }}</td></tr>
+  <tr><th>Quantidade em estoque</th><td>{{ item.quantidadeEstoque }}</td></tr>
+  <tr><th>Quantidade mínima</th><td>{{ item.quantidadeMinima }}</td></tr>
+  <tr><th>Validade</th><td>{{ item.dataValidade|date:"d/m/Y"|default:"-" }}</td></tr>
+  <tr><th>Alerta de mínimo</th><td>{% if item.abaixo_do_minimo %}Sim ⚠️{% else %}Não{% endif %}</td></tr>
+  <tr><th>Validade próxima</th><td>{% if item.validade_proxima %}Sim ⚠️{% else %}Não{% endif %}</td></tr>
+</table>
+
+<p class="toolbar">
+  {% if perfil_atual == 'gestor' %}
+  <a href="{% url 'farmacia:item_editar' tipo=tipo pk=item.pk %}">Editar</a>
+  <a href="{% url 'farmacia:item_lote' tipo=tipo pk=item.pk %}">Adicionar lote</a>
+  {% endif %}
+  {% if perfil_atual == 'enfermeiro' or perfil_atual == 'farmaceutico' %}
+  <a href="{% url 'farmacia:item_reposicao' tipo=tipo pk=item.pk %}">Solicitar reposição</a>
+  {% endif %}
+  {% if tipo == 'medicamento' and perfil_atual == 'farmaceutico' %}
+  <a href="{% url 'farmacia:medicamento_dispensar' pk=item.pk %}">Dispensar</a>
+  {% endif %}
+  {% if tipo == 'material' and perfil_atual == 'enfermeiro' %}
+  <a href="{% url 'farmacia:material_consumo' pk=item.pk %}">Registrar consumo</a>
+  {% endif %}
+</p>
+
+<p><a href="{% url 'farmacia:item_listar' tipo=tipo %}">Voltar para lista</a></p>
+
+{% endblock %}

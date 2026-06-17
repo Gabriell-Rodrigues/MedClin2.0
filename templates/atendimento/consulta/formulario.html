@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">{{ botao }}</button>
+  {% if perfil_atual == 'paciente' %}
+  <a href="{% url 'atendimento:agenda_paciente' %}">Voltar</a>
+  {% else %}
+  <a href="{% url 'atendimento:consulta_listar' %}">Voltar para lista</a>
+  {% endif %}
+</form>
+
+{% endblock %}

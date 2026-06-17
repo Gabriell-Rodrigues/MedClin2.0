@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<table class="table">
+  <tr><th>ID</th><td>{{ funcionario.pk }}</td></tr>
+  <tr><th>Nome</th><td>{{ funcionario.nome }}</td></tr>
+  <tr><th>CPF</th><td>{{ funcionario.cpf_formatado }}</td></tr>
+  <tr><th>E-mail</th><td>{{ funcionario.email }}</td></tr>
+  <tr><th>Telefone</th><td>{{ funcionario.telefone }}</td></tr>
+  {% if perfil == 'medico' %}
+  <tr><th>CRM</th><td>{{ funcionario.crm }}</td></tr>
+  <tr><th>Especialização</th><td>{{ funcionario.especializacao|default:"-" }}</td></tr>
+  <tr><th>Agenda (ID)</th><td>{{ funcionario.idAgenda|default:"-" }}</td></tr>
+  {% endif %}
+  {% if perfil == 'enfermeiro' %}
+  <tr><th>COREN</th><td>{{ funcionario.coren }}</td></tr>
+  {% endif %}
+  {% if perfil == 'farmaceutico' %}
+  <tr><th>CRF</th><td>{{ funcionario.crf }}</td></tr>
+  {% endif %}
+</table>
+
+<p>
+  <a href="{% url 'acesso:funcionario_editar' perfil=perfil pk=funcionario.pk %}">Editar</a>
+  |
+  <a href="{% url 'acesso:funcionario_listar' perfil=perfil %}">Voltar para lista</a>
+</p>
+
+{% endblock %}

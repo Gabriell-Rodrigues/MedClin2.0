@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p>
+  Informe o seu e-mail cadastrado. Enviaremos um link para você definir uma nova
+  senha (válido por 30 minutos).
+</p>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Enviar link</button>
+  <a href="{% url 'acesso:login' %}">Voltar ao login</a>
+</form>
+
+{% endblock %}

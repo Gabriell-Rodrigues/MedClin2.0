@@ -1,0 +1,29 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<table class="table">
+  <tr><th>ID</th><td>{{ consulta.idConsulta }}</td></tr>
+  <tr><th>Data</th><td>{{ consulta.data|date:"d/m/Y" }}</td></tr>
+  <tr><th>Horário</th><td>{{ consulta.horario|time:"H:i" }}</td></tr>
+  <tr><th>Status</th><td>{% include 'atendimento/consulta/_status.html' with status=consulta.status label=consulta.get_status_display %}</td></tr>
+  <tr><th>Sala</th><td>{{ consulta.idSala|default:"-" }}</td></tr>
+  <tr><th>Agenda</th><td>{{ consulta.agenda|default:"-" }}</td></tr>
+  <tr><th>Paciente (ID)</th><td>{{ consulta.idPaciente }}</td></tr>
+  <tr><th>Médico (ID)</th><td>{{ consulta.idMedico }}</td></tr>
+  <tr><th>Prontuário (ID)</th><td>{{ consulta.idProntuario|default:"-" }}</td></tr>
+</table>
+
+<p class="toolbar">
+  {% if perfil_atual == 'recepcionista' and consulta.ativa %}
+  <a href="{% url 'atendimento:consulta_reagendar' consulta.idConsulta %}">Reagendar</a>
+  <a href="{% url 'atendimento:consulta_cancelar' consulta.idConsulta %}">Cancelar</a>
+  {% endif %}
+  {% if perfil_atual == 'paciente' %}
+  <a href="{% url 'atendimento:agenda_paciente' %}">Voltar</a>
+  {% else %}
+  <a href="{% url 'atendimento:consulta_listar' %}">Voltar para lista</a>
+  {% endif %}
+</p>
+
+{% endblock %}

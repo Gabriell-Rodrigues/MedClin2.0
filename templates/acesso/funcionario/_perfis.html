@@ -1,0 +1,8 @@
+<p class="perfis">
+  Perfil:
+  <a href="{% url 'acesso:funcionario_listar' perfil='recepcionista' %}">Recepcionistas</a> |
+  <a href="{% url 'acesso:funcionario_listar' perfil='medico' %}">Médicos</a> |
+  <a href="{% url 'acesso:funcionario_listar' perfil='enfermeiro' %}">Enfermeiros</a> |
+  <a href="{% url 'acesso:funcionario_listar' perfil='farmaceutico' %}">Farmacêuticos</a> |
+  <a href="{% url 'acesso:funcionario_listar' perfil='gestor' %}">Gestores</a>
+</p>

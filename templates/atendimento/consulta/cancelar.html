@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p>Confirma o cancelamento da consulta {{ consulta.idConsulta }}?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn--danger">Sim, cancelar</button>
+  <a href="{% url 'atendimento:consulta_detalhe' consulta.idConsulta %}">Não, voltar</a>
+</form>
+
+{% endblock %}

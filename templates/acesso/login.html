@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}" />
+  {{ form.as_p }}
+  <button type="submit">Entrar</button>
+</form>
+
+<p>
+  <a href="{% url 'acesso:redefinir_senha' %}">Esqueci minha senha</a>
+</p>
+
+{% endblock %}

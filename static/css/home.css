@@ -1,0 +1,378 @@
+/* ==========================================================================
+   MedClin — Landing page / tela inicial
+   Estilos exclusivos da home (carregados apenas nesta página).
+   Usa os design tokens de variables.css, funcionando em tema claro e escuro.
+   ========================================================================== */
+
+/* A home ocupa a largura total; cada seção controla a largura pelo .container. */
+.page-home .main {
+  max-width: none;
+  padding: 0;
+}
+.page-home .alerts {
+  width: 100%;
+  max-width: var(--container);
+  margin: var(--sp-4) auto 0;
+  padding-inline: var(--sp-4);
+}
+
+/* --- Botões adicionais (usados na landing) --------------------------- */
+.btn--lg {
+  padding: 0.85rem 1.6rem;
+  font-size: var(--fs-500);
+}
+.btn--ghost {
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  border-color: var(--color-border-strong);
+}
+.btn--ghost:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-primary-darker);
+}
+.btn--on-dark {
+  background: #fff;
+  color: var(--color-primary-dark);
+}
+.btn--on-dark:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-primary-darker);
+}
+
+/* ============================ HERO ============================ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  background: radial-gradient(
+      900px 420px at 88% -20%,
+      rgba(14, 116, 144, 0.16),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--color-primary-soft) 0%, var(--color-bg) 78%);
+}
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: var(--sp-7);
+  align-items: center;
+  padding-block: clamp(var(--sp-6), 6vw, 4.5rem);
+}
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--fs-300);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+.hero__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success-border);
+}
+.hero__title {
+  margin: var(--sp-4) 0 var(--sp-3);
+  font-size: clamp(2rem, 4.6vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--color-heading);
+}
+.hero__title-accent {
+  color: var(--color-primary-dark);
+}
+.hero__subtitle {
+  margin: 0 0 var(--sp-5);
+  max-width: 54ch;
+  font-size: var(--fs-500);
+  color: var(--color-text-muted);
+}
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.hero__highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin: var(--sp-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hero__highlights li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-300);
+  font-weight: 600;
+  color: var(--color-text);
+}
+.hero__highlights svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--color-success-text);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Ilustração / painel decorativo do hero */
+.hero__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 280px;
+}
+.hero__panel {
+  width: min(100%, 420px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transform: rotate(-1.5deg);
+}
+.hero__panel-bar {
+  display: flex;
+  gap: 6px;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-border);
+}
+.hero__panel-bar span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+}
+.hero__panel-body {
+  padding: var(--sp-5);
+}
+.hero__pulse svg {
+  width: 100%;
+  height: 60px;
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hero__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0;
+}
+.hero__chip {
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-size: var(--fs-300);
+  font-weight: 700;
+}
+.hero__rows {
+  display: grid;
+  gap: var(--sp-2);
+}
+.hero__rows span {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+}
+.hero__rows span:nth-child(1) {
+  width: 100%;
+}
+.hero__rows span:nth-child(2) {
+  width: 80%;
+}
+.hero__rows span:nth-child(3) {
+  width: 60%;
+}
+.hero__emblem {
+  position: absolute;
+  top: -10px;
+  right: 6%;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  transform: rotate(8deg);
+}
+
+/* ============================ SEÇÕES ============================ */
+.section {
+  padding-block: clamp(var(--sp-6), 5vw, 4rem);
+}
+.section--alt {
+  background: var(--color-surface-alt);
+  border-block: 1px solid var(--color-border);
+}
+.section__head {
+  max-width: 62ch;
+  margin: 0 auto var(--sp-6);
+  text-align: center;
+}
+.section__head h2 {
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  margin-bottom: var(--sp-2);
+}
+.section__head p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-500);
+}
+
+/* ============================ CARDS DE MÓDULO ============================ */
+.module-card__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--sp-1);
+  border-radius: 14px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+}
+.module-card__icon svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.module-card__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-dark);
+}
+.module-card__links a:hover {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  text-decoration: none;
+}
+.module-card__links a::after {
+  content: "→";
+  font-weight: 700;
+}
+
+/* ============================ BENEFÍCIOS ============================ */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-5);
+}
+.feature {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.feature__icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+}
+.feature__icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.feature h3 {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--fs-500);
+}
+.feature p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-300);
+}
+
+/* ============================ CTA FINAL ============================ */
+.cta-band {
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+  color: #fff;
+}
+.cta-band__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-block: clamp(var(--sp-5), 4vw, 3rem);
+}
+.cta-band h2 {
+  color: #fff;
+  margin: 0 0 var(--sp-1);
+}
+.cta-band p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================ RESPONSIVO ============================ */
+@media (max-width: 880px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+  }
+  .hero__art {
+    order: -1;
+    min-height: 0;
+  }
+  .hero__panel {
+    width: min(100%, 360px);
+    transform: none;
+  }
+  .hero__emblem {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .cta-band__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .cta-band__inner .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

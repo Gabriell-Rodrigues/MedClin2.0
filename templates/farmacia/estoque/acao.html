@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p>Item: <strong>{{ item.nome }}</strong> — estoque atual: {{ item.quantidadeEstoque }}</p>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">{{ botao }}</button>
+  <a href="{% url 'farmacia:item_detalhe' tipo=tipo pk=item.pk %}">Cancelar</a>
+</form>
+
+{% endblock %}

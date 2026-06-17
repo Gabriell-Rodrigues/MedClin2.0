@@ -1,0 +1,71 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<table class="table">
+  <tr>
+    <th>ID</th>
+    <td>{{ paciente.idPaciente }}</td>
+  </tr>
+
+  <tr>
+    <th>Nome</th>
+    <td>{{ paciente.nome }}</td>
+  </tr>
+
+  <tr>
+    <th>CPF</th>
+    <td>{{ paciente.cpf_formatado }}</td>
+  </tr>
+
+  <tr>
+    <th>Telefone</th>
+    <td>{{ paciente.telefone }}</td>
+  </tr>
+
+  <tr>
+    <th>Data de nascimento</th>
+    <td>{{ paciente.dataNascimento|date:"d/m/Y" }}</td>
+  </tr>
+
+  <tr>
+    <th>E-mail</th>
+    <td>{{ paciente.email }}</td>
+  </tr>
+
+  <tr>
+    <th>Recepcionista</th>
+    <td>
+      {% if paciente.idRecepcionista %} {{ paciente.idRecepcionista }} {% else
+      %} Não vinculado {% endif %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Agenda</th>
+    <td>
+      {% if paciente.idAgenda %} {{ paciente.idAgenda }} {% else %} Não
+      vinculada {% endif %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Prontuário</th>
+    <td>
+      {% if paciente.idProntuario %} {{ paciente.idProntuario }} {% else %} Não
+      vinculado {% endif %}
+    </td>
+  </tr>
+</table>
+
+<p>
+  <a href="{% url 'cadastros:paciente_editar' paciente.idPaciente %}">
+    Editar paciente
+  </a>
+
+  |
+
+  <a href="{% url 'cadastros:paciente_listar' %}"> Voltar para lista </a>
+</p>
+
+{% endblock %}

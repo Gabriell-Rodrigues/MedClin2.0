@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p>
+  O prontuário é criado vazio. Os dados clínicos são preenchidos depois, ao
+  registrar a evolução.
+</p>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+
+  <button type="submit">{{ botao }}</button>
+
+  <a href="{% url 'prontuario:prontuario_listar' %}"> Voltar para lista </a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+{% include 'acesso/funcionario/_perfis.html' %}
+
+<form method="get" role="search">
+  <p>
+    <label for="busca-termo">Buscar por nome ou CPF</label>
+    <input
+      type="search"
+      id="busca-termo"
+      name="termo"
+      value="{{ termo }}"
+      placeholder="Nome ou CPF"
+    />
+  </p>
+  <button type="submit">Buscar</button>
+</form>
+
+{% if funcionarios %}
+<table class="table">
+  <thead>
+    <tr><th>ID</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Ações</th></tr>
+  </thead>
+  <tbody>
+    {% for f in funcionarios %}
+    <tr>
+      <td>{{ f.pk }}</td>
+      <td>{{ f.nome }}</td>
+      <td>{{ f.cpf_formatado }}</td>
+      <td>{{ f.email }}</td>
+      <td>
+        <a href="{% url 'acesso:funcionario_detalhe' perfil=perfil pk=f.pk %}">Ver</a>
+        |
+        <a href="{% url 'acesso:funcionario_editar' perfil=perfil pk=f.pk %}">Editar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<p><a href="{% url 'acesso:funcionario_listar' perfil=perfil %}">Voltar para lista</a></p>
+
+{% endblock %}

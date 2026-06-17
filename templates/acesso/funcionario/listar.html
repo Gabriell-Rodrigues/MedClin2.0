@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+{% include 'acesso/funcionario/_perfis.html' %}
+
+<p class="toolbar">
+  <a class="btn" href="{% url 'acesso:funcionario_cadastrar' perfil=perfil %}">+ Cadastrar novo</a>
+  <a href="{% url 'acesso:funcionario_buscar' perfil=perfil %}">Buscar</a>
+</p>
+
+{% if funcionarios %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>CPF</th>
+      <th>E-mail</th>
+      <th>Telefone</th>
+      {% if perfil == 'medico' %}<th>CRM</th><th>Especialização</th>{% endif %}
+      {% if perfil == 'enfermeiro' %}<th>COREN</th>{% endif %}
+      {% if perfil == 'farmaceutico' %}<th>CRF</th>{% endif %}
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in funcionarios %}
+    <tr>
+      <td>{{ f.pk }}</td>
+      <td>{{ f.nome }}</td>
+      <td>{{ f.cpf_formatado }}</td>
+      <td>{{ f.email }}</td>
+      <td>{{ f.telefone }}</td>
+      {% if perfil == 'medico' %}<td>{{ f.crm }}</td><td>{{ f.especializacao }}</td>{% endif %}
+      {% if perfil == 'enfermeiro' %}<td>{{ f.coren }}</td>{% endif %}
+      {% if perfil == 'farmaceutico' %}<td>{{ f.crf }}</td>{% endif %}
+      <td>
+        <a href="{% url 'acesso:funcionario_detalhe' perfil=perfil pk=f.pk %}">Ver</a>
+        |
+        <a href="{% url 'acesso:funcionario_editar' perfil=perfil pk=f.pk %}">Editar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhum funcionário cadastrado neste perfil.</p>
+{% endif %} {% endblock %}

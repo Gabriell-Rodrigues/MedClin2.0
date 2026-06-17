@@ -1,0 +1,40 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p class="toolbar">
+  {% if perfil_atual == 'recepcionista' %}
+  <a class="btn" href="{% url 'atendimento:consulta_agendar' %}">+ Agendar consulta</a>
+  <a href="{% url 'atendimento:agenda_paciente' %}">Agenda do paciente</a>
+  <a href="{% url 'atendimento:agenda_listar' %}">Agendas</a>
+  {% endif %}
+  {% if perfil_atual == 'medico' %}
+  <a href="{% url 'atendimento:agenda_medico' %}">Minha agenda</a>
+  {% endif %}
+</p>
+
+{% if consultas %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th><th>Data</th><th>Horário</th><th>Status</th>
+      <th>Paciente</th><th>Médico</th><th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in consultas %}
+    <tr>
+      <td>{{ c.idConsulta }}</td>
+      <td>{{ c.data|date:"d/m/Y" }}</td>
+      <td>{{ c.horario|time:"H:i" }}</td>
+      <td>{% include 'atendimento/consulta/_status.html' with status=c.status label=c.get_status_display %}</td>
+      <td>{{ c.idPaciente }}</td>
+      <td>{{ c.idMedico }}</td>
+      <td><a href="{% url 'atendimento:consulta_detalhe' c.idConsulta %}">Ver</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma consulta registrada.</p>
+{% endif %} {% endblock %}

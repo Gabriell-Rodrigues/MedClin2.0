@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block titulo %}Acesso negado — MedClin{% endblock %}
+
+{% block content %}
+
+<h2>Acesso negado</h2>
+
+<div class="alert alert--error" role="alert">
+  <span class="alert__icon" aria-hidden="true"></span>
+  <span class="alert__text">
+    Seu perfil
+    {% if perfil_atual %}(<strong>{{ perfil_atual }}</strong>){% endif %}
+    não tem permissão para acessar esta página.
+  </span>
+</div>
+
+<p>
+  Esta funcionalidade é restrita aos perfis:
+  <strong>
+    {% for p in perfis_necessarios %}{{ p }}{% if not forloop.last %}, {% endif %}{% endfor %}</strong>.
+</p>
+
+<p class="toolbar">
+  <a class="btn" href="{% url 'home' %}">Voltar ao início</a>
+  <a href="{% url 'acesso:logout' %}">Trocar de usuário</a>
+</p>
+
+{% endblock %}

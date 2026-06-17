@@ -1,0 +1,39 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+{% if form %}
+<form method="get">
+  {{ form.as_p }}
+  <button type="submit">Consultar</button>
+</form>
+{% endif %}
+
+{% if perfil_atual == 'paciente' %}
+<p><a href="{% url 'atendimento:consulta_agendar' %}">Agendar nova consulta</a></p>
+{% endif %}
+
+{% if consultas is not None %}
+  {% if consultas %}
+  <table class="table">
+    <thead>
+      <tr><th>ID</th><th>Data</th><th>Horário</th><th>Status</th><th>Médico</th></tr>
+    </thead>
+    <tbody>
+      {% for c in consultas %}
+      <tr>
+        <td><a href="{% url 'atendimento:consulta_detalhe' c.idConsulta %}">{{ c.idConsulta }}</a></td>
+        <td>{{ c.data|date:"d/m/Y" }}</td>
+        <td>{{ c.horario|time:"H:i" }}</td>
+        <td>{% include 'atendimento/consulta/_status.html' with status=c.status label=c.get_status_display %}</td>
+        <td>{{ c.idMedico }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>Nenhum agendamento encontrado para o paciente.</p>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

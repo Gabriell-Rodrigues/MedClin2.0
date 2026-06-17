@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<form method="get">
+  {{ form.as_p }}
+
+  <button type="submit">Buscar</button>
+
+  <a href="{% url 'cadastros:paciente_listar' %}"> Voltar para lista </a>
+</form>
+
+<hr />
+
+{% if pacientes %}
+<h3>Resultado da busca</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>CPF</th>
+      <th>Telefone</th>
+      <th>E-mail</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for paciente in pacientes %}
+    <tr>
+      <td>{{ paciente.idPaciente }}</td>
+      <td>{{ paciente.nome }}</td>
+      <td>{{ paciente.cpf_formatado }}</td>
+      <td>{{ paciente.telefone }}</td>
+      <td>{{ paciente.email }}</td>
+      <td>
+        <a href="{% url 'cadastros:paciente_detalhe' paciente.idPaciente %}">
+          Visualizar
+        </a>
+        |
+        <a href="{% url 'cadastros:paciente_editar' paciente.idPaciente %}">
+          Editar
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %} {% endblock %}

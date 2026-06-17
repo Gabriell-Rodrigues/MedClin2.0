@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% block titulo %}Gerenciar estoques — MedClin{% endblock %}
+
+{% block body %}
+
+<header class="page-header">
+  <h2>{{ titulo }}</h2>
+  <p>Visão geral dos estoques de medicamentos e materiais.</p>
+</header>
+
+<section class="card">
+  <h3>
+    Medicamentos
+    <small>(<a href="{% url 'farmacia:medicamento_listar' %}">gerenciar</a>)</small>
+  </h3>
+  {% if medicamentos_criticos %}
+  <p class="alert-flag">
+    ⚠ Críticos:
+    {% for m in medicamentos_criticos %}{{ m.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}
+  </p>
+  {% endif %}
+  <table class="table">
+    <thead><tr><th>Nome</th><th>Estoque</th><th>Mínimo</th></tr></thead>
+    <tbody>
+      {% for m in medicamentos %}
+      <tr>
+        <td><a href="{% url 'farmacia:item_detalhe' tipo='medicamento' pk=m.pk %}">{{ m.nome }}</a></td>
+        <td>{{ m.quantidadeEstoque }}{% if m.abaixo_do_minimo %} <span class="alert-flag">⚠</span>{% endif %}</td>
+        <td>{{ m.quantidadeMinima }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3">Nenhum medicamento.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h3>
+    Materiais
+    <small>(<a href="{% url 'farmacia:material_listar' %}">gerenciar</a>)</small>
+  </h3>
+  {% if materiais_criticos %}
+  <p class="alert-flag">
+    ⚠ Críticos:
+    {% for m in materiais_criticos %}{{ m.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}
+  </p>
+  {% endif %}
+  <table class="table">
+    <thead><tr><th>Nome</th><th>Estoque</th><th>Mínimo</th></tr></thead>
+    <tbody>
+      {% for m in materiais %}
+      <tr>
+        <td><a href="{% url 'farmacia:item_detalhe' tipo='material' pk=m.pk %}">{{ m.nome }}</a></td>
+        <td>{{ m.quantidadeEstoque }}{% if m.abaixo_do_minimo %} <span class="alert-flag">⚠</span>{% endif %}</td>
+        <td>{{ m.quantidadeMinima }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3">Nenhum material.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% endblock %}

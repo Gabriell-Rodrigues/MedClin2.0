@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p class="toolbar">
+  <a class="btn" href="{% url 'atendimento:agenda_criar' %}">+ Criar agenda</a>
+</p>
+
+{% if agendas %}
+<table class="table">
+  <thead>
+    <tr><th>ID</th><th>Data</th><th>Salas ocupadas</th></tr>
+  </thead>
+  <tbody>
+    {% for a in agendas %}
+    <tr>
+      <td>{{ a.idAgenda }}</td>
+      <td>{{ a.data|date:"d/m/Y" }}</td>
+      <td>{{ a.ocupacaoSalas }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma agenda criada.</p>
+{% endif %} {% endblock %}

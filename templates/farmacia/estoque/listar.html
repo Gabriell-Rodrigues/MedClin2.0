@@ -1,0 +1,38 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p class="toolbar">
+  {% if perfil_atual == 'gestor' %}
+  <a class="btn" href="{% url 'farmacia:item_cadastrar' tipo=tipo %}">+ Cadastrar</a>
+  {% endif %}
+  <a href="{% url 'farmacia:item_verificar' tipo=tipo %}">Verificar estoque</a>
+  {% if perfil_atual == 'gestor' %}
+  <a href="{% url 'farmacia:estoque_gerenciar' %}">Gerenciar estoques</a>
+  {% endif %}
+</p>
+
+{% if itens %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th><th>Nome</th><th>Estoque</th><th>Mínimo</th>
+      <th>Validade</th><th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in itens %}
+    <tr>
+      <td>{{ item.pk }}</td>
+      <td>{{ item.nome }}</td>
+      <td>{{ item.quantidadeEstoque }}{% if item.abaixo_do_minimo %} ⚠️{% endif %}</td>
+      <td>{{ item.quantidadeMinima }}</td>
+      <td>{{ item.dataValidade|date:"d/m/Y"|default:"-" }}</td>
+      <td><a href="{% url 'farmacia:item_detalhe' tipo=tipo pk=item.pk %}">Ver</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhum item cadastrado.</p>
+{% endif %} {% endblock %}

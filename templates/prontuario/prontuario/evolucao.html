@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p>
+  Apenas um médico autorizado pode registrar a evolução. O diagnóstico, as
+  observações e a prescrição atuais são atualizados e uma cópia datada é
+  acrescentada ao histórico.
+</p>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+
+  <button type="submit">{{ botao }}</button>
+
+  <a href="{% url 'prontuario:prontuario_detalhe' prontuario.idProntuario %}">
+    Voltar para o prontuário
+  </a>
+</form>
+
+{% endblock %}

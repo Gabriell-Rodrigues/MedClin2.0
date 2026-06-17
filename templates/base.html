@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e7490" />
+    <title>{% block titulo %}MedClin{% endblock %}</title>
+    <script>
+      // Define o tema antes da pintura para evitar "flash" de tela clara.
+      (function () {
+        try {
+          var t = localStorage.getItem("medclin-theme");
+          if (!t) {
+            t = window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          }
+          document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {}
+      })();
+    </script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=4" />
+    {% block head_extra %}{% endblock %}
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="site-header">
+      <div class="container navbar">
+        <p class="brand">
+          <span class="brand__mark" aria-hidden="true">✚</span>
+          <a href="{% url 'home' %}">MedClin</a>
+        </p>
+
+        <button
+          type="button"
+          class="nav-toggle"
+          data-nav-toggle
+          aria-expanded="false"
+          aria-controls="menu-principal"
+        >
+          <span class="nav-toggle__bars" aria-hidden="true"></span>
+          Menu
+        </button>
+
+        <nav aria-label="Navegação principal">
+          <ul class="nav" id="menu-principal" data-nav>
+            <li><a href="{% url 'home' %}">Início</a></li>
+            
+            {% if nav.pacientes %}
+            <li><a href="{% url 'cadastros:paciente_listar' %}">Pacientes</a></li>
+            {% endif %} 
+            
+            {% if nav.consultas %} 
+              {% if perfil_atual == 'paciente' %}
+              <li><a href="{% url 'atendimento:agenda_paciente' %}">Minhas consultas</a></li>
+              {% else %}
+              <li><a href="{% url 'atendimento:consulta_listar' %}">Consultas</a></li>
+              {% endif %} 
+              
+              {% if perfil_atual == 'medico' %}
+              <li><a href="{% url 'atendimento:agenda_medico' %}">Minha agenda</a></li>
+              {% endif %} 
+            {% endif %} 
+            
+            {% if nav.prontuarios %} 
+              {% if perfil_atual == 'paciente' %}
+              <li><a href="{% url 'prontuario:meu_prontuario' %}">Meu prontuário</a></li>
+              {% else %}
+              <li><a href="{% url 'prontuario:prontuario_listar' %}">Prontuários</a></li>
+              {% endif %} 
+            {% endif %} 
+            
+            {% if nav.medicamentos %}
+            <li><a href="{% url 'farmacia:medicamento_listar' %}">Medicamentos</a></li>
+            {% endif %} 
+            
+            {% if nav.materiais %}
+            <li><a href="{% url 'farmacia:material_listar' %}">Materiais</a></li>
+            {% endif %} 
+            
+            {% if nav.funcionarios %}
+            <li><a href="{% url 'acesso:funcionario_listar' perfil='medico' %}">Funcionários</a></li>
+            {% endif %} 
+            
+            {% if request.session.usuario_id %}
+            <li><span class="nav__user">👤 {{ request.session.usuario_nome }}</span></li>
+            <li><a href="{% url 'acesso:logout' %}">Sair</a></li>
+            {% else %}
+            <li><a href="{% url 'acesso:login' %}">Entrar</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+
+        <button
+          type="button"
+          class="theme-toggle"
+          data-theme-toggle
+          aria-label="Ativar modo escuro"
+        >
+          <!-- Sol: visível no modo claro -->
+          <svg
+            class="theme-toggle__icon theme-toggle__icon--sun"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle cx="12" cy="12" r="4.2" />
+            <g stroke-linecap="round">
+              <line x1="12" y1="2.5" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="21.5" />
+              <line x1="2.5" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="21.5" y2="12" />
+              <line x1="5.1" y1="5.1" x2="6.9" y2="6.9" />
+              <line x1="17.1" y1="17.1" x2="18.9" y2="18.9" />
+              <line x1="5.1" y1="18.9" x2="6.9" y2="17.1" />
+              <line x1="17.1" y1="6.9" x2="18.9" y2="5.1" />
+            </g>
+          </svg>
+          <!-- Lua: visível no modo escuro -->
+          <svg
+            class="theme-toggle__icon theme-toggle__icon--moon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="main" id="conteudo">
+      {% if messages %}
+      <ul class="alerts">
+        {% for message in messages %}
+        <li class="alert alert--{{ message.tags }}" role="alert">
+          <span class="alert__icon" aria-hidden="true"></span>
+          <span class="alert__text">{{ message }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% block body %}
+      <section class="card">{% block content %}{% endblock %}</section>
+      {% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <div class="site-footer__brand">
+          <p class="brand brand--footer">
+            <span class="brand__mark" aria-hidden="true">✚</span> MedClin
+          </p>
+          <p class="site-footer__tagline">
+            Sistema de Gestão para Clínica Médica — acesso, cadastros,
+            atendimento, prontuário e farmácia em um só lugar.
+          </p>
+        </div>
+        <nav class="site-footer__links" aria-label="Links do rodapé">
+          <a href="{% url 'home' %}">Início</a>
+          {% if request.session.usuario_id %}
+          <a href="{% url 'acesso:logout' %}">Sair</a>
+          {% else %}
+          <a href="{% url 'acesso:login' %}">Entrar</a>
+          {% endif %}
+        </nav>
+      </div>
+      <div class="container site-footer__bottom">
+        Projeto acadêmico de Engenharia de Software · Universidade Federal de
+        Sergipe.
+      </div>
+    </footer>
+
+    <script src="{% static 'js/app.js' %}?v=2" defer></script>
+  </body>
+</html>

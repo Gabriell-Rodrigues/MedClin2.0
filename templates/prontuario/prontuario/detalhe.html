@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<table class="table">
+  <tr>
+    <th>ID</th>
+    <td>{{ prontuario.idProntuario }}</td>
+  </tr>
+
+  <tr>
+    <th>Data de criação</th>
+    <td>{{ prontuario.dataCriacao|date:"d/m/Y H:i" }}</td>
+  </tr>
+
+  <tr>
+    <th>Paciente vinculado</th>
+    <td>
+      {% if paciente %} {{ paciente.nome }} (ID {{ paciente.idPaciente }}) {%
+      else %} Não vinculado {% endif %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Diagnóstico</th>
+    <td>{{ prontuario.diagnostico|default:"-"|linebreaksbr }}</td>
+  </tr>
+
+  <tr>
+    <th>Observações</th>
+    <td>{{ prontuario.observacoes|default:"-"|linebreaksbr }}</td>
+  </tr>
+
+  <tr>
+    <th>Prescrição ativa</th>
+    <td>{{ prontuario.prescricaoAtiva|default:"-"|linebreaksbr }}</td>
+  </tr>
+</table>
+
+{% if perfil_atual != 'paciente' %}
+<h3>Profissionais autorizados</h3>
+
+<ul>
+  <li>
+    <strong>Médicos:</strong>
+    {% if autorizados.medico %} {{ autorizados.medico|join:", " }} {% else %}
+    nenhum {% endif %}
+  </li>
+  <li>
+    <strong>Enfermeiros:</strong>
+    {% if autorizados.enfermeiro %} {{ autorizados.enfermeiro|join:", " }} {%
+    else %} nenhum {% endif %}
+  </li>
+  <li>
+    <strong>Farmacêuticos:</strong>
+    {% if autorizados.farmaceutico %} {{ autorizados.farmaceutico|join:", " }}
+    {% else %} nenhum {% endif %}
+  </li>
+</ul>
+
+<p class="toolbar">
+  {% if perfil_atual == 'medico' %}
+  <a href="{% url 'prontuario:prontuario_conceder_acesso' prontuario.idProntuario %}">
+    Conceder acesso
+  </a>
+  {% endif %}
+  <a href="{% url 'prontuario:prontuario_verificar_acesso' prontuario.idProntuario %}">
+    Verificar acesso
+  </a>
+</p>
+{% endif %}
+
+<h3>Histórico de evoluções</h3>
+
+{% if prontuario.historicoEvolucoes %}
+<pre>{{ prontuario.historicoEvolucoes }}</pre>
+{% else %}
+<p>Nenhuma evolução registrada.</p>
+{% endif %}
+
+<p>
+  {% if perfil_atual == 'medico' %}
+  <a href="{% url 'prontuario:prontuario_registrar_evolucao' prontuario.idProntuario %}">
+    Registrar evolução
+  </a>
+  |
+  {% endif %}
+  {% if perfil_atual == 'paciente' %}
+  <a href="{% url 'home' %}">Voltar ao início</a>
+  {% else %}
+  <a href="{% url 'prontuario:prontuario_listar' %}"> Voltar para lista </a>
+  {% endif %}
+</p>
+
+{% endblock %}

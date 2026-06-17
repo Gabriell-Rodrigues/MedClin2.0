@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<h3>Itens críticos (estoque ≤ mínimo)</h3>
+{% if criticos %}
+<ul>
+  {% for item in criticos %}
+  <li>
+    <a href="{% url 'farmacia:item_detalhe' tipo=tipo pk=item.pk %}">{{ item.nome }}</a>
+    — {{ item.quantidadeEstoque }} / mín. {{ item.quantidadeMinima }}
+    {% if perfil_atual == 'enfermeiro' or perfil_atual == 'farmaceutico' %}
+    <a href="{% url 'farmacia:item_reposicao' tipo=tipo pk=item.pk %}">solicitar reposição</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Nenhum item em nível crítico.</p>
+{% endif %}
+
+<h3>Todos os itens</h3>
+{% if itens %}
+<table class="table">
+  <thead><tr><th>Nome</th><th>Estoque</th><th>Mínimo</th><th>Validade</th></tr></thead>
+  <tbody>
+    {% for item in itens %}
+    <tr>
+      <td><a href="{% url 'farmacia:item_detalhe' tipo=tipo pk=item.pk %}">{{ item.nome }}</a></td>
+      <td>{{ item.quantidadeEstoque }}</td>
+      <td>{{ item.quantidadeMinima }}</td>
+      <td>{{ item.dataValidade|date:"d/m/Y"|default:"-" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhum item cadastrado.</p>
+{% endif %}
+
+<p><a href="{% url 'farmacia:item_listar' tipo=tipo %}">Voltar</a></p>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ titulo }}</h2>
+
+{% if prontuarios %}
+<ul>
+  {% for prontuario in prontuarios %}
+    <li>
+      <a href="{% url 'prontuario:prontuario_detalhe' prontuario.idProntuario %}">
+        Prontuário {{ prontuario.idProntuario }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Nenhum prontuário encontrado.</p>
+{% endif %}
+
+{% endblock %}

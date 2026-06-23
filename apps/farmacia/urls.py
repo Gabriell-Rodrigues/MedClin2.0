@@ -16,6 +16,11 @@ urlpatterns = [
     # Visão geral dos estoques (UC-20)
     path('estoques/', views.gerenciar_estoque, name='estoque_gerenciar'),
 
+    # Caixa de notificações do gestor (reposições / estoque mínimo) (UC-20)
+    path('notificacoes/', views.notificacoes_gestor, name='notificacoes_gestor'),
+    path('notificacoes/<str:tipo>/<int:pk>/atender/', views.atender_reposicao,
+         name='atender_reposicao'),
+
     # CRUD genérico de itens de estoque (tipo = material | medicamento)
     path('itens/<str:tipo>/', views.listar_itens, name='item_listar'),
     path('itens/<str:tipo>/novo/', views.cadastrar_item, name='item_cadastrar'),

@@ -1,0 +1,34 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+{% if consultas %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Consulta</th><th>Data</th><th>Horário</th>
+      <th>Paciente (ID)</th><th>Médico (ID)</th><th>Ação</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in consultas %}
+    <tr>
+      <td>{{ c.idConsulta }}</td>
+      <td>{{ c.data|date:"d/m/Y" }}</td>
+      <td>{{ c.horario|time:"H:i" }}</td>
+      <td>{{ c.idPaciente }}</td>
+      <td>{{ c.idMedico }}</td>
+      <td>
+        <a href="{% url 'financeiro:registrar_pagamento' c.idConsulta %}">
+          Registrar pagamento
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma consulta com pagamento pendente.</p>
+{% endif %}
+
+{% endblock %}

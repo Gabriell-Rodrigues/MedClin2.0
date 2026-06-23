@@ -8,12 +8,13 @@ from apps.farmacia.entity_estoque.models import Material, Medicamento
 
 class _ItemEstoqueForm(forms.ModelForm):
     campos = ['nome', 'descricao', 'numeroLote', 'quantidadeEstoque',
-              'quantidadeMinima', 'dataValidade']
+              'quantidadeMinima', 'dataValidade', 'valor']
     rotulos = {
         'numeroLote': 'Número do lote',
         'quantidadeEstoque': 'Quantidade em estoque',
         'quantidadeMinima': 'Quantidade mínima',
         'dataValidade': 'Data de validade',
+        'valor': 'Preço unitário (R$)',
     }
     widgets_comuns = {'dataValidade': forms.DateInput(attrs={'type': 'date'})}
 
@@ -46,10 +47,13 @@ class LoteForm(forms.Form):
 
 
 class DispensarForm(forms.Form):
-    """Dispensação de medicamento (UC-13)."""
+    """Dispensação de medicamento (UC-13).
+
+    O farmacêutico responsável é o usuário autenticado (obtido da sessão na
+    view), não um ID digitado no formulário.
+    """
 
     quantidade = forms.IntegerField(label='Quantidade', min_value=1)
-    idFarmaceutico = forms.IntegerField(label='ID do farmacêutico', min_value=1)
     idProntuario = forms.IntegerField(label='ID do prontuário (opcional)',
                                       required=False, min_value=1)
 

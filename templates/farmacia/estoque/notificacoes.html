@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+{% if notificacoes %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Tipo</th><th>Item</th><th>Situação</th>
+      <th>Estoque / mín.</th><th>Solicitado</th><th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in notificacoes %}
+    <tr>
+      <td>{{ n.tipo|capfirst }}</td>
+      <td>
+        <a href="{% url 'farmacia:item_detalhe' tipo=n.tipo pk=n.item.pk %}">
+          {{ n.item.nome }}
+        </a>
+      </td>
+      <td>
+        {% if n.classe == 'reposicao' %}
+        <span class="badge badge--warning">Reposição solicitada</span>
+        {% else %}
+        <span class="badge badge--danger">Estoque no mínimo</span>
+        {% endif %}
+      </td>
+      <td>{{ n.item.quantidadeEstoque }} / {{ n.item.quantidadeMinima }}</td>
+      <td>{{ n.item.quantidadeSolicitada|default:"-" }}</td>
+      <td>
+        {% if n.classe == 'reposicao' %}
+        <form method="post"
+              action="{% url 'farmacia:atender_reposicao' tipo=n.tipo pk=n.item.pk %}"
+              style="display:inline">
+          {% csrf_token %}
+          <button type="submit" name="acao" value="atender">Atender</button>
+          <button type="submit" name="acao" value="recusar" class="btn--secondary">Recusar</button>
+        </form>
+        {% else %}
+        <span>—</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma notificação no momento.</p>
+{% endif %}
+
+{% endblock %}

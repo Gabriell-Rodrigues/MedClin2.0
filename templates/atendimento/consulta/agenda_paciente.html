@@ -9,10 +9,6 @@
 </form>
 {% endif %}
 
-{% if perfil_atual == 'paciente' %}
-<p><a href="{% url 'atendimento:consulta_agendar' %}">Agendar nova consulta</a></p>
-{% endif %}
-
 {% if consultas is not None %}
   {% if consultas %}
   <table class="table">

@@ -1,0 +1,50 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<form method="get">
+  {{ form.as_p }}
+  <button type="submit">Gerar relatório</button>
+</form>
+
+{% if relatorio %}
+<div class="card">
+  <p><strong>Consultas pagas:</strong> {{ relatorio.quantidade }}</p>
+  <p><strong>Total recebido:</strong> R$ {{ relatorio.total|floatformat:2 }}</p>
+
+  {% if relatorio.por_forma %}
+  <h3>Por forma de pagamento</h3>
+  <table class="table">
+    <thead><tr><th>Forma</th><th>Total (R$)</th></tr></thead>
+    <tbody>
+      {% for forma, valor in relatorio.por_forma.items %}
+      <tr><td>{{ forma }}</td><td>{{ valor|floatformat:2 }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+<h3>Consultas no período</h3>
+{% if relatorio.consultas %}
+<table class="table">
+  <thead>
+    <tr><th>Consulta</th><th>Pago em</th><th>Forma</th><th>Valor (R$)</th></tr>
+  </thead>
+  <tbody>
+    {% for c in relatorio.consultas %}
+    <tr>
+      <td>{{ c.idConsulta }}</td>
+      <td>{{ c.dataPagamento|date:"d/m/Y H:i" }}</td>
+      <td>{{ c.get_formaPagamento_display }}</td>
+      <td>{{ c.valor|floatformat:2 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhum pagamento no período.</p>
+{% endif %}
+{% endif %}
+
+{% endblock %}

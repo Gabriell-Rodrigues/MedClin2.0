@@ -37,12 +37,44 @@ def _cfg(tipo):
     return cfg
 
 
+# Perfis autorizados por tipo de item, conforme a Matriz de Atores x Casos de
+# Uso: materiais -> Enfermeiro (UC-15/UC-17); medicamentos -> Farmacêutico
+# (UC-14/UC-16). O Gestor supervisiona ambos os estoques (UC-20).
+PERFIS_POR_TIPO = {
+    'material': ('enfermeiro', 'gestor'),
+    'medicamento': ('farmaceutico', 'gestor'),
+}
+
+
+def _checar_perfil_tipo(request, tipo, incluir_gestor=True):
+    """Garante que o perfil logado pode operar sobre o tipo informado.
+
+    Complementa o decorator @perfis_permitidos (que ignora o tipo): impede,
+    por exemplo, que um farmacêutico acesse materiais ou um enfermeiro acesse
+    medicamentos. Retorna uma resposta 403 quando não permitido, ou None.
+    """
+    permitidos = PERFIS_POR_TIPO.get(tipo, ())
+    if not incluir_gestor:
+        permitidos = tuple(p for p in permitidos if p != 'gestor')
+    perfil = request.session.get('usuario_perfil')
+    if perfil not in permitidos:
+        return render(request, 'acesso/403.html', {
+            'titulo': 'Acesso negado',
+            'perfis_necessarios': permitidos,
+            'perfil_atual': perfil,
+        }, status=403)
+    return None
+
+
 # ----------------------------------------------------------------------
 # CRUD de itens de estoque (genérico para material/medicamento)
 # ----------------------------------------------------------------------
 @perfis_permitidos('enfermeiro', 'farmaceutico', 'gestor')
 def listar_itens(request, tipo):
     cfg = _cfg(tipo)
+    negado = _checar_perfil_tipo(request, tipo)
+    if negado:
+        return negado
     return render(request, 'farmacia/estoque/listar.html', {
         'itens': cfg['ctr'].listar(),
         'tipo': tipo,
@@ -74,6 +106,9 @@ def cadastrar_item(request, tipo):
 @perfis_permitidos('enfermeiro', 'farmaceutico', 'gestor')
 def detalhe_item(request, tipo, pk):
     cfg = _cfg(tipo)
+    negado = _checar_perfil_tipo(request, tipo)
+    if negado:
+        return negado
     item = get_object_or_404(cfg['ctr'].model, pk=pk)
     return render(request, 'farmacia/estoque/detalhe.html', {
         'item': item, 'tipo': tipo,
@@ -135,6 +170,9 @@ def adicionar_lote(request, tipo, pk):
 def solicitar_reposicao(request, tipo, pk):
     """Solicita reposição ao gestor (UC-14 / UC-17)."""
     cfg = _cfg(tipo)
+    negado = _checar_perfil_tipo(request, tipo, incluir_gestor=False)
+    if negado:
+        return negado
     item = get_object_or_404(cfg['ctr'].model, pk=pk)
     if request.method == 'POST':
         form = ReposicaoForm(request.POST)
@@ -163,10 +201,16 @@ def solicitar_reposicao(request, tipo, pk):
 def verificar_estoque(request, tipo):
     """Verifica o estoque, destacando itens críticos (UC-15 / UC-16)."""
     cfg = _cfg(tipo)
-    itens = cfg['ctr'].listar()
+    negado = _checar_perfil_tipo(request, tipo)
+    if negado:
+        return negado
     criticos = cfg['ctr'].listar_criticos()
+    termo = (request.GET.get('q') or '').strip()
+    # Busca por nome/descrição (diagrama de sequência: buscarMedicamentos);
+    # sem termo, lista todos os itens.
+    itens = cfg['ctr'].buscar(termo) if termo else cfg['ctr'].listar()
     return render(request, 'farmacia/estoque/verificar.html', {
-        'itens': itens, 'criticos': criticos, 'tipo': tipo,
+        'itens': itens, 'criticos': criticos, 'tipo': tipo, 'q': termo,
         'titulo': f'Estoque de {cfg["plural"].lower()}',
     })
 
@@ -185,7 +229,7 @@ def dispensar_medicamento(request, pk):
                 CTRMedicamento.dispensar(
                     medicamento,
                     form.cleaned_data['quantidade'],
-                    form.cleaned_data['idFarmaceutico'],
+                    request.session.get('usuario_id'),
                     form.cleaned_data.get('idProntuario'),
                 )
                 messages.success(request, 'Medicamento dispensado com sucesso.')
@@ -237,3 +281,38 @@ def gerenciar_estoque(request):
         'medicamentos_criticos': CTRMedicamento.listar_criticos(),
         'titulo': 'Gerenciar estoques',
     })
+
+
+@perfis_permitidos('gestor')
+def notificacoes_gestor(request):
+    """
+    Caixa de notificações do gestor (UC-20): reposições solicitadas pelo
+    enfermeiro/farmacêutico e itens com estoque no nível mínimo.
+    """
+    notificacoes = []
+    for tipo, cfg in ITENS.items():
+        for item in cfg['ctr'].model.objects.filter(reposicaoSolicitada=True):
+            notificacoes.append({'tipo': tipo, 'item': item, 'classe': 'reposicao'})
+        for item in cfg['ctr'].listar_criticos():
+            if not item.reposicaoSolicitada:
+                notificacoes.append({'tipo': tipo, 'item': item, 'classe': 'minimo'})
+
+    return render(request, 'farmacia/estoque/notificacoes.html', {
+        'notificacoes': notificacoes,
+        'titulo': 'Notificações',
+    })
+
+
+@perfis_permitidos('gestor')
+def atender_reposicao(request, tipo, pk):
+    """Gestor atende ou recusa uma solicitação de reposição (UC-20)."""
+    cfg = _cfg(tipo)
+    item = get_object_or_404(cfg['ctr'].model, pk=pk)
+    if request.method == 'POST':
+        atendida = request.POST.get('acao') != 'recusar'
+        cfg['ctr'].atender_reposicao(item, atendida=atendida)
+        messages.success(
+            request,
+            'Reposição atendida.' if atendida else 'Reposição recusada.',
+        )
+    return redirect('farmacia:notificacoes_gestor')

@@ -34,6 +34,18 @@ class ItemEstoque(models.Model):
         default=0, db_column='quantidadeMinima')
     dataValidade = models.DateField(null=True, blank=True, db_column='dataValidade')
 
+    # Preço unitário do item (usado no controle financeiro).
+    valor = models.DecimalField(max_digits=10, decimal_places=2,
+                                null=True, blank=True)
+
+    # Reposição solicitada ao gestor (vira notificação na caixa do gestor).
+    reposicaoSolicitada = models.BooleanField(
+        default=False, db_column='reposicaoSolicitada')
+    quantidadeSolicitada = models.PositiveIntegerField(
+        null=True, blank=True, db_column='quantidadeSolicitada')
+    justificativaReposicao = models.TextField(
+        blank=True, default='', db_column='justificativaReposicao')
+
     class Meta:
         abstract = True
 

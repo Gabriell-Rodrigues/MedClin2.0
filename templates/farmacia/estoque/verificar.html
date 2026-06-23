@@ -20,6 +20,20 @@
 {% endif %}
 
 <h3>Todos os itens</h3>
+
+<form method="get" class="toolbar">
+  <input
+    type="search"
+    name="q"
+    value="{{ q|default:'' }}"
+    placeholder="Buscar por nome ou descrição"
+  />
+  <button type="submit">Buscar</button>
+  {% if q %}
+  <a href="{% url 'farmacia:item_verificar' tipo=tipo %}">Limpar</a>
+  {% endif %}
+</form>
+
 {% if itens %}
 <table class="table">
   <thead><tr><th>Nome</th><th>Estoque</th><th>Mínimo</th><th>Validade</th></tr></thead>
@@ -35,7 +49,10 @@
   </tbody>
 </table>
 {% else %}
-<p>Nenhum item cadastrado.</p>
+<p>
+  {% if q %}Nenhum item encontrado para "{{ q }}".{% else %}Nenhum item
+  cadastrado.{% endif %}
+</p>
 {% endif %}
 
 <p><a href="{% url 'farmacia:item_listar' tipo=tipo %}">Voltar</a></p>

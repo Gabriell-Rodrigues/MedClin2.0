@@ -85,8 +85,20 @@
             
             {% if nav.funcionarios %}
             <li><a href="{% url 'acesso:funcionario_listar' perfil='medico' %}">Funcionários</a></li>
-            {% endif %} 
-            
+            {% endif %}
+
+            {% if nav.pagamentos %}
+            <li><a href="{% url 'financeiro:pagamentos_pendentes' %}">Pagamentos</a></li>
+            {% endif %}
+
+            {% if nav.relatorio %}
+            <li><a href="{% url 'financeiro:relatorio' %}">Relatório</a></li>
+            {% endif %}
+
+            {% if nav.notificacoes %}
+            <li><a href="{% url 'farmacia:notificacoes_gestor' %}">Notificações</a></li>
+            {% endif %}
+
             {% if request.session.usuario_id %}
             <li><span class="nav__user">👤 {{ request.session.usuario_nome }}</span></li>
             <li><a href="{% url 'acesso:logout' %}">Sair</a></li>

@@ -16,8 +16,8 @@
   <tr>
     <th>Paciente vinculado</th>
     <td>
-      {% if paciente %} {{ paciente.nome }} (ID {{ paciente.idPaciente }}) {%
-      else %} Não vinculado {% endif %}
+      {% if paciente %} {{ paciente.nome }} (ID {{ paciente.idPaciente }})
+      {% else %} Não vinculado {% endif %}
     </td>
   </tr>
 
@@ -48,8 +48,8 @@
   </li>
   <li>
     <strong>Enfermeiros:</strong>
-    {% if autorizados.enfermeiro %} {{ autorizados.enfermeiro|join:", " }} {%
-    else %} nenhum {% endif %}
+    {% if autorizados.enfermeiro %} {{ autorizados.enfermeiro|join:", " }}
+    {% else %} nenhum {% endif %}
   </li>
   <li>
     <strong>Farmacêuticos:</strong>

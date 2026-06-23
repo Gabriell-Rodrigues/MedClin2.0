@@ -2,8 +2,8 @@
 
 Projeto acadêmico da disciplina de Engenharia de Software (UFS). Aplicação web
 em **Django** que organiza o dia a dia de uma clínica em módulos: acesso,
-cadastros, atendimento, prontuário eletrônico e farmácia, com controle de acesso
-por perfil e rastreabilidade das ações.
+cadastros, atendimento, prontuário eletrônico, farmácia e financeiro, com
+controle de acesso por perfil e rastreabilidade das ações.
 
 > **Documentos de referência** (pasta acima desta, `Proj Engenharia de Software 2.0`):
 > SRS, **Casos de Uso v3.0**, **Documento de Arquitetura v5** (modelo 4+1 /
@@ -18,11 +18,13 @@ O MedClin é usado por **seis perfis**, cada um enxergando apenas as telas do se
 trabalho (controle de acesso por papel):
 
 - **Paciente** — vê seus agendamentos, marca consultas e consulta seu prontuário.
-- **Recepcionista** — cadastra pacientes, agenda/reagenda/cancela consultas.
+- **Recepcionista** — cadastra pacientes, agenda/reagenda/cancela consultas e
+  registra o pagamento das consultas.
 - **Médico** — vê sua agenda, acessa prontuários e registra evoluções clínicas.
 - **Enfermeiro** — consulta prontuários e registra consumo de materiais.
 - **Farmacêutico** — verifica estoque e dispensa medicamentos.
-- **Gestor** — cadastra funcionários e gerencia os estoques.
+- **Gestor** — cadastra funcionários, gerencia os estoques, vê o relatório
+  financeiro e a caixa de notificações (reposições e estoque mínimo).
 
 **Fluxo típico:** a recepcionista cadastra o paciente e agenda a consulta → o
 médico registra a evolução no prontuário → o farmacêutico dispensa o medicamento
@@ -105,7 +107,8 @@ aderência ao OR. Em desenvolvimento, o e-mail é impresso no **console** (backe
 ## Testes
 
 Suíte automatizada em `tests/` (login, RBAC, dispensação/consumo de estoque,
-prontuário, conflito de horário, auditoria e redefinição de senha):
+prontuário, conflito de horário, auditoria, redefinição de senha, pagamento e
+relatório financeiro):
 
 ```
 $env:MEDCLIN_DB="sqlite"
@@ -150,6 +153,9 @@ automaticamente assim que o projeto for versionado no GitHub.
 | Solicitar reposição | Enfermeiro, Farmacêutico (UC-14, UC-17) |
 | Dispensar medicamento | Farmacêutico (UC-13) |
 | Registrar consumo de material | Enfermeiro |
+| Registrar pagamento de consulta | Recepcionista (UC-07) |
+| Relatório financeiro | Gestor (UC-09, UC-10) |
+| Caixa de notificações (reposições / estoque mínimo) | Gestor (UC-20) |
 
 ## Módulos (padrão BCE)
 
@@ -161,8 +167,11 @@ automaticamente assim que o projeto for versionado no GitHub.
 - **prontuario** — Prontuário Eletrônico; evolução clínica como addendum e
   acesso autorizado por perfil (UC-11, UC-12, UC-18).
 - **farmacia** — Material e Medicamento; dispensação, consumo, verificação e
-  gestão de estoque, com registros rastreáveis (UC-13 a UC-17, UC-20).
-- **financeiro** — **fora do escopo atual** (ver Pendências).
+  gestão de estoque; solicitação de reposição e **caixa de notificações do
+  gestor** (UC-13 a UC-17, UC-20).
+- **financeiro** — pagamento de consulta pela recepcionista e relatório
+  financeiro do gestor (UC-07, UC-09, UC-10). Opera sobre a entidade `Consulta`
+  (colunas de pagamento), sem tabela própria.
 
 ## Estrutura do projeto
 
@@ -192,7 +201,9 @@ MedClin-main/
 │   ├── atendimento/
 │   ├── prontuario/
 │   ├── farmacia/
-│   └── financeiro/               # stub (fora do escopo)
+│   └── financeiro/               # pagamento de consulta + relatório
+│       ├── boundary_tela_financeiro/
+│       └── control_ctr_pagamento/   # opera sobre Consulta (sem entity própria)
 │
 ├── templates/                    # HTML (base, home e por módulo)
 ├── static/                       # CSS (tema claro/escuro) e JS
@@ -206,7 +217,8 @@ MedClin-main/
 │   ├── test_farmacia.py
 │   ├── test_prontuario.py
 │   ├── test_auditoria.py
-│   └── test_redefinicao.py
+│   ├── test_redefinicao.py
+│   └── test_financeiro.py
 │
 ├── logs/                         # auditoria.log (gerado em runtime; no .gitignore)
 ├── config/  e  core/             # pacotes reservados (placeholders)
@@ -223,11 +235,20 @@ MedClin-main/
 > entregues. **Regra adotada: em caso de conflito, a aplicação segue o OR.**
 > Como os documentos já foram entregues, as divergências ficam registradas aqui.
 
-### 1. Fora de escopo (proposital)
+### 1. Módulo Financeiro — implementado por extensão do OR (ação pendente no documento)
 
-- **Módulo Financeiro** (UC-07 Registrar Pagamento, UC-09 Relatório Financeiro,
-  UC-10 Status de Pagamentos): o OR **não define entidades financeiras**, então
-  o módulo não foi implementado (existe apenas como stub, fora do `INSTALLED_APPS`).
+O módulo Financeiro (UC-07, UC-09, UC-10) **foi implementado** por decisão do
+grupo, **adicionando colunas** a tabelas existentes (sem criar tabela nova). O
+**documento do OR precisa ser atualizado** com estas colunas:
+
+- **Consulta**: `valor`, `formaPagamento` (dinheiro/cartão/PIX), `pago`,
+  `dataPagamento`.
+- **Material** e **Medicamento**: `valor` (preço unitário), `reposicaoSolicitada`,
+  `quantidadeSolicitada`, `justificativaReposicao`.
+
+Observações: o relatório financeiro é uma **agregação** sobre `Consulta` (sem
+tabela). A caixa de notificações do gestor usa as colunas de reposição dos itens
+(também sem tabela). UC-07 = pagamento por consulta (1 pagamento por consulta).
 
 ### 2. Arquitetura-alvo × implementação de referência
 
@@ -249,7 +270,8 @@ acadêmica (monólito Django) não segue. São divergências **conscientes** (IS
 
 - **Financeiro como módulo**: aparece no Escopo (§1.2), na Camada de Negócio
   (§7.2.2) e no repositório (§11.2), mas **some** da Visão Lógica (§9.2) e do
-  BCE (§8), que listam dois módulos de estoque no lugar.
+  BCE (§8). Na aplicação ele **existe como módulo** (UC-07/09/10), o que torna o
+  Escopo coerente — falta apenas refletir isso na Visão Lógica/BCE do documento.
 - **Farmácia**: a app usa **um** módulo (materiais + medicamentos); a Visão
   Lógica/BCE separa em **dois**. O conteúdo (entidades/CTRs) é equivalente.
 - **Tabela 18 (BCE Prontuário)** omite `historicoEvolucoes` nos atributos, mas
@@ -263,8 +285,10 @@ acadêmica (monólito Django) não segue. São divergências **conscientes** (IS
 
 - **`Gestor_Material` / `Gestor_Medicamento`**: tabelas existem (fiéis ao OR),
   mas o vínculo de supervisão não é populado no fluxo do gestor (UC-20).
-- **Solicitar reposição (UC-14/UC-17)**: apenas registra no log — o OR não define
-  tabela de "solicitação de reposição".
 
-> **Resolvido:** UC-02 (Redefinir Senha) agora segue o fluxo por link com
-> validade de 30 minutos e uso único (ver "Login e redefinição de senha").
+> **Resolvidos:**
+> - **UC-02 (Redefinir Senha)** — fluxo por link com validade de 30 minutos e
+>   uso único (ver "Login e redefinição de senha").
+> - **Módulo Financeiro (UC-07/09/10)** — implementado por colunas (ver item 1).
+> - **Solicitar reposição (UC-14/17)** — agora vira notificação na caixa do
+>   gestor, em vez de só registrar no log.

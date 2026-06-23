@@ -28,22 +28,18 @@ def listar_consultas(request):
     })
 
 
-@perfis_permitidos('recepcionista', 'paciente')
+@perfis_permitidos('recepcionista')
 def agendar_consulta(request):
-    """Agenda uma nova consulta (UC-05)."""
+    """Agenda uma nova consulta (UC-05).
 
-    # O paciente agenda apenas para si mesmo: o idPaciente é fixado pela sessão
-    # e o campo não é exibido. A recepcionista informa o paciente normalmente.
-    eh_paciente = request.session.get('usuario_perfil') == 'paciente'
+    O agendamento é exclusivo da recepcionista; o paciente apenas consulta
+    seus próprios agendamentos em "Minhas consultas".
+    """
 
     if request.method == 'POST':
         form = ConsultaForm(request.POST)
-        if eh_paciente and 'idPaciente' in form.fields:
-            form.fields['idPaciente'].required = False
         if form.is_valid():
             dados = dict(form.cleaned_data)
-            if eh_paciente:
-                dados['idPaciente'] = request.session.get('usuario_id')
             try:
                 consulta = CTRConsulta.agendar_consulta(dados)
                 messages.success(request, 'Consulta agendada com sucesso.')
@@ -53,9 +49,6 @@ def agendar_consulta(request):
                     messages.error(request, mensagem)
     else:
         form = ConsultaForm()
-
-    if eh_paciente and 'idPaciente' in form.fields:
-        del form.fields['idPaciente']
 
     return render(request, 'atendimento/consulta/formulario.html', {
         'form': form,

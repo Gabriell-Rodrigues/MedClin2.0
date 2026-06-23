@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'apps.atendimento.apps.AtendimentoConfig',
     'apps.prontuario.apps.ProntuarioConfig',
     'apps.farmacia.apps.FarmaciaConfig',
+    'apps.financeiro.apps.FinanceiroConfig',
 ]
 
 MIDDLEWARE = [

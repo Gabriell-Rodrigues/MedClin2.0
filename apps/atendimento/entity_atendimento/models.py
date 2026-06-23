@@ -105,6 +105,24 @@ class Consulta(models.Model):
     idMedico = models.IntegerField(db_column='idMedico')
     idProntuario = models.IntegerField(null=True, blank=True, db_column='idProntuario')
 
+    # --- Pagamento (UC-07): registrado pela recepcionista na própria consulta ---
+    FORMA_DINHEIRO = 'dinheiro'
+    FORMA_CARTAO = 'cartao'
+    FORMA_PIX = 'pix'
+    FORMA_PAGAMENTO_CHOICES = (
+        (FORMA_DINHEIRO, 'Dinheiro'),
+        (FORMA_CARTAO, 'Cartão'),
+        (FORMA_PIX, 'PIX'),
+    )
+    valor = models.DecimalField(max_digits=10, decimal_places=2,
+                                null=True, blank=True)
+    formaPagamento = models.CharField(max_length=20, blank=True, default='',
+                                      choices=FORMA_PAGAMENTO_CHOICES,
+                                      db_column='formaPagamento')
+    pago = models.BooleanField(default=False)
+    dataPagamento = models.DateTimeField(null=True, blank=True,
+                                         db_column='dataPagamento')
+
     class Meta:
         db_table = 'Consulta'
         verbose_name = 'Consulta'

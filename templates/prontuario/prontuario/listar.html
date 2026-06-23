@@ -1,0 +1,40 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+{% if perfil_atual == 'medico' or perfil_atual == 'recepcionista' %}
+<p class="toolbar">
+  <a class="btn" href="{% url 'prontuario:prontuario_inicializar' %}">
+    + Inicializar prontuário
+  </a>
+</p>
+{% endif %}
+
+{% if prontuarios %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Data de criação</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for prontuario in prontuarios %}
+    <tr>
+      <td>{{ prontuario.idProntuario }}</td>
+      <td>{{ prontuario.dataCriacao|date:"d/m/Y H:i" }}</td>
+      <td>
+        <a href="{% url 'prontuario:prontuario_detalhe' prontuario.idProntuario %}">
+          Ver
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhum prontuário cadastrado.</p>
+{% endif %}
+
+{% endblock %}

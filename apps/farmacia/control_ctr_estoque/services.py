@@ -45,6 +45,7 @@ class CTRItemEstoque:
             quantidadeEstoque=dados.get('quantidadeEstoque') or 0,
             quantidadeMinima=dados.get('quantidadeMinima') or 0,
             dataValidade=dados.get('dataValidade'),
+            valor=dados.get('valor'),
         )
         item.full_clean()
         item.save()
@@ -59,6 +60,7 @@ class CTRItemEstoque:
         item.quantidadeEstoque = dados.get('quantidadeEstoque') or 0
         item.quantidadeMinima = dados.get('quantidadeMinima') or 0
         item.dataValidade = dados.get('dataValidade')
+        item.valor = dados.get('valor')
         item.full_clean()
         item.save()
         cls._log(item, f'{cls.label} atualizado.')
@@ -98,16 +100,42 @@ class CTRItemEstoque:
         """
         Solicita reposição ao gestor (UC-14 / UC-17).
 
-        Sem entidade no mapeamento OR; registrada como notificação simples.
+        A solicitação é gravada no próprio item (reposicaoSolicitada,
+        quantidadeSolicitada, justificativaReposicao) e aparece na caixa de
+        notificações do gestor (UC-20). Não há tabela dedicada no OR.
         """
         if not quantidade or quantidade <= 0:
             raise ValidationError('Informe uma quantidade válida para reposição.')
+        if not item.abaixo_do_minimo():
+            raise ValidationError(
+                'Reposição só pode ser solicitada para itens com estoque '
+                'igual ou abaixo do mínimo.'
+            )
+        item.reposicaoSolicitada = True
+        item.quantidadeSolicitada = quantidade
+        item.justificativaReposicao = justificativa or ''
+        item.save(update_fields=['reposicaoSolicitada', 'quantidadeSolicitada',
+                                 'justificativaReposicao'])
         cls._log(
             item,
             f'Solicitação de reposição: +{quantidade} '
             f'(solicitante {id_solicitante}). Justificativa: {justificativa}',
         )
         return True
+
+    @classmethod
+    def atender_reposicao(cls, item, atendida=True):
+        """
+        Gestor atende ou recusa uma solicitação de reposição (UC-20),
+        limpando a notificação do item.
+        """
+        item.reposicaoSolicitada = False
+        item.quantidadeSolicitada = None
+        item.justificativaReposicao = ''
+        item.save(update_fields=['reposicaoSolicitada', 'quantidadeSolicitada',
+                                 'justificativaReposicao'])
+        cls._log(item, 'Reposição ' + ('atendida.' if atendida else 'recusada.'))
+        return item
 
     @staticmethod
     def _log(item, mensagem):

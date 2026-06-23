@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<p>
+  Informe o perfil e o ID do profissional para verificar se ele possui acesso
+  autorizado a este prontuário.
+</p>
+
+<form method="get">
+  {{ form.as_p }}
+  <button type="submit">Verificar</button>
+</form>
+
+{% if resultado %}
+<div class="card">
+  <p>
+    Perfil <strong>{{ resultado.perfil }}</strong>, ID
+    <strong>{{ resultado.idProfissional }}</strong>:
+    {% if resultado.tem_acesso %}
+    <strong>tem acesso</strong> a este prontuário.
+    {% else %}
+    <strong>não tem acesso</strong> a este prontuário.
+    {% endif %}
+  </p>
+</div>
+{% endif %}
+
+<p>
+  <a href="{% url 'prontuario:prontuario_detalhe' prontuario.idProntuario %}">
+    Voltar ao prontuário
+  </a>
+</p>
+
+{% endblock %}

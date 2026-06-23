@@ -21,5 +21,8 @@ def usuario(request):
             'medicamentos': algum('farmaceutico', 'gestor'),
             'materiais': algum('enfermeiro', 'gestor'),
             'funcionarios': algum('gestor'),
+            'pagamentos': algum('recepcionista'),
+            'relatorio': algum('gestor'),
+            'notificacoes': algum('gestor'),
         },
     }

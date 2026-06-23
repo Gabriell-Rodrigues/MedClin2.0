@@ -144,10 +144,9 @@
         </span>
         <h3>Atendimento</h3>
         {% if perfil_atual == 'paciente' %}
-        <p>Veja seus agendamentos e marque novas consultas.</p>
+        <p>Veja seus agendamentos e consultas marcadas.</p>
         <div class="module-card__links">
           <a href="{% url 'atendimento:agenda_paciente' %}">Minhas consultas</a>
-          <a href="{% url 'atendimento:consulta_agendar' %}">Agendar consulta</a>
         </div>
         {% else %}
         <p>Agendamento de consultas e agendas de médicos e pacientes.</p>

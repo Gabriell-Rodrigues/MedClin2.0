@@ -1,0 +1,19 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2>{{ titulo }}</h2>
+
+<table class="table">
+  <tr><th>Consulta</th><td>{{ consulta.idConsulta }}</td></tr>
+  <tr><th>Data</th><td>{{ consulta.data|date:"d/m/Y" }} {{ consulta.horario|time:"H:i" }}</td></tr>
+  <tr><th>Paciente (ID)</th><td>{{ consulta.idPaciente }}</td></tr>
+  <tr><th>Médico (ID)</th><td>{{ consulta.idMedico }}</td></tr>
+  <tr><th>Status do pagamento</th><td>{% if consulta.pago %}Pago{% else %}Pendente{% endif %}</td></tr>
+</table>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">{{ botao }}</button>
+  <a href="{% url 'financeiro:pagamentos_pendentes' %}">Voltar</a>
+</form>
+
+{% endblock %}
